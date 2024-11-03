@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const AuthMiddleware = (req, res, next) => {
+const authMiddleware = (req, res, next) => {
   const authHeader = req.header("Authorization");
   
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -18,4 +18,4 @@ const AuthMiddleware = (req, res, next) => {
   }
 };
 
-module.exports = AuthMiddleware;
+module.exports = authMiddleware;

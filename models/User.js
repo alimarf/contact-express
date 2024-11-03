@@ -11,11 +11,17 @@ const userSchema = new mongoose.Schema(
   {
     toJSON: {
       transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
+        const transformed = {
+          id: ret._id,
+          username: ret.username,
+          email: ret.email,
+          phone: ret.phone,
+          address: ret.address,
+        };
+
         delete ret.password;
         delete ret.__v;
-        return ret;
+        return transformed;
       },
     },
   }

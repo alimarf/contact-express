@@ -17,9 +17,38 @@ exports.createUser = async (req, res) => {
 
 // Get All Users
 exports.getUsers = async (req, res) => {
+  // Dapatkan `page` dan `limit` dari query parameter, dengan default nilai 1 dan 10
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  // Hitung berapa data yang akan dilewati (skip) untuk pagination
+  const skip = (page - 1) * limit;
+
   try {
-    const users = await User.find();
-    res.status(200).json({ statusCode: 200,  message: "Response Success", data: users });
+    // Dapatkan jumlah total data untuk menghitung jumlah halaman
+    const total = await User.countDocuments();
+
+    // Dapatkan data berdasarkan pagination
+    const users = await User.find()
+      .skip(skip)
+      .limit(limit)
+      .select("-password -__v");
+
+    // Hitung jumlah halaman total
+    const totalPages = Math.ceil(total / limit);
+
+    // Kembalikan data dengan informasi pagination
+    res.status(200).json({
+      statusCode: 200,
+      message: "Response Success",
+      data: users,
+      pagination: {
+        totalItems: total,
+        totalPages: totalPages,
+        currentPage: page,
+        itemsPerPage: limit,
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
